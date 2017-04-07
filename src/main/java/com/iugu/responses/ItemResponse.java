@@ -13,22 +13,24 @@ import com.iugu.serializers.JsonFormat;
 public class ItemResponse {
 
 	private String id;
-	
+
 	private String description;
-	
+
 	private Integer quantity;
-	
-	@JsonProperty("price_cents")
+
 	private Integer priceCents;
-	
+
 	@JsonProperty("created_at")
 	private String createdAt;
-	
+
 	@JsonProperty("updated_at")
-	@JsonFormat("yyyy-MM-dd'T'HH:mm:ssZ") @JsonSerialize(using = DateSerializer.class)
+	@JsonFormat("yyyy-MM-dd'T'HH:mm:ssZ")
+	@JsonSerialize(using = DateSerializer.class)
 	private Date updatedAt;
-	
+
 	private String price;
+
+	private boolean _destroy = false;
 
 	public String getId() {
 		return id;
@@ -54,6 +56,7 @@ public class ItemResponse {
 		this.quantity = quantity;
 	}
 
+	@JsonProperty("price_cents")
 	public Integer getPriceCents() {
 		return priceCents;
 	}
@@ -85,6 +88,20 @@ public class ItemResponse {
 	public void setPrice(String price) {
 		this.price = price;
 	}
-	
-	
+
+	public boolean is_destroy() {
+		return _destroy;
+	}
+
+	public void set_destroy(boolean _destroy) {
+		this._destroy = _destroy;
+	}
+
+	@Override
+	public String toString() {
+		return "ItemResponse [id=" + id + ", description=" + description + ", quantity=" + quantity + ", priceCents="
+				+ priceCents + ", createdAt=" + createdAt + ", updatedAt=" + updatedAt + ", price=" + price
+				+ ", _destroy=" + _destroy + "]";
+	}
+
 }

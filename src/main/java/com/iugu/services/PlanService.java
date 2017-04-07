@@ -113,5 +113,21 @@ public class PlanService {
 		throw new IuguException("Error removing plan!", ResponseStatus, ResponseText);
 	}
 
-	// TODO Listar os planos
+	public PlanResponse list() throws IuguException {
+		Response response = this.iugu.getNewClient().target(CREATE_URL).request().get();
+
+		int ResponseStatus = response.getStatus();
+		String ResponseText = null;
+
+		if (ResponseStatus == 200)
+			return response.readEntity(PlanResponse.class);
+
+		// Error Happened
+		if (response.hasEntity())
+			ResponseText = response.readEntity(String.class);
+
+		response.close();
+
+		throw new IuguException("Error creating plan!", ResponseStatus, ResponseText);
+	}
 }

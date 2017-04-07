@@ -2,6 +2,7 @@ package com.iugu.services;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.List;
 
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.core.Form;
@@ -11,6 +12,7 @@ import javax.ws.rs.core.Response;
 import com.iugu.IuguConfiguration;
 import com.iugu.exceptions.IuguException;
 import com.iugu.model.Invoice;
+import com.iugu.model.Item;
 import com.iugu.responses.InvoiceResponse;
 import com.iugu.utils.ConvertionUtils;
 
@@ -184,6 +186,68 @@ public class InvoiceService {
 		response.close();
 
 		throw new IuguException("Error finding invoice with customerId: " + id, ResponseStatus, ResponseText);
+	}
+	
+	/**
+	 * Alterar faturas pendentes, caso elas não tenha status pendente, será retornado erro.
+	 * @param id Identificação da fatura
+	 * @param date Nova data
+	 * @param ignoreCanceledEmail Ignora o envio do e-mail de cancelamento da fatura atual.
+	 * @param ignoreDueEmail Ignora o envio do e-mail de cobrança da nova fatura.
+	 * @param currentFinesOption Caso seja enviado 'true', as multas da fatura atual são aplicadas à segunda via.
+	 * @param items [] Adicione, altere ou remova itens a nova fatura. @see com.iugu.responses#ItemResponse
+	 * @return InvoiceResponse
+	 * @throws IuguException
+	 * @author Andre M. Rezende
+	 */
+	public InvoiceResponse changePendingInvoiceById(String id, Date date, boolean ignoreCanceledEmail, boolean ignoreDueEmail, boolean currentFinesOption, List<Item> items) throws IuguException {
+		if (items == null || items.size() < 1) {
+			throw new IuguException("Items is null or empty.");
+		}
+
+		if (id == null || "".equals(id.trim())) {
+			throw new IuguException("Invoice ID is null.");
+		}
+
+		Response response = null;
+		InvoiceResponse invoiceResponse = null;
+		try {
+			 response = this.iugu.getNewClient().target(String.format(FIND_URL, id)).request().get();
+
+			int responseStatus = response.getStatus();
+			String responseText = null;
+
+			// Invoice not found
+			if (!response.hasEntity()) {
+				responseText = response.readEntity(String.class);
+				throw new IuguException("Error finding invoice with id: " + id, responseStatus, responseText);
+			}
+			
+			Invoice invoice = new Invoice(id, date,  ignoreCanceledEmail,  ignoreDueEmail,  currentFinesOption, items);
+			response = this.iugu.getNewClient().target(String.format(DUPLICATE_URL, id)).request().post(Entity.entity(invoice, MediaType.APPLICATION_JSON));
+
+			responseStatus = response.getStatus();
+			responseText = null;		
+			
+			// Error Happened
+			if (!response.hasEntity()) {
+				responseText = response.readEntity(String.class);
+				throw new IuguException("Error duplicating invoice with id: " + id, responseStatus, responseText);			
+			}
+			
+			if (response.getStatus() == 200) {
+				invoiceResponse = response.readEntity(InvoiceResponse.class);
+			} else {
+				responseText = response.readEntity(String.class);
+				throw new IuguException("Error duplicating invoice with id: " + id, responseStatus, responseText);			
+			}
+
+			return invoiceResponse;					
+		} finally {
+			if (response != null) {
+				response.close();
+			}
+		}
 	}
 
 	// TODO Listar as faturas

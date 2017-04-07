@@ -1,14 +1,12 @@
 package com.iugu.services;
 
-import com.iugu.IuguConfiguration;
-import com.iugu.exceptions.IuguException;
-import com.iugu.model.PaymentMethod;
-import com.iugu.model.PaymentToken;
-import com.iugu.responses.PaymentTokenResponse;
-
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+
+import com.iugu.IuguConfiguration;
+import com.iugu.exceptions.IuguException;
+import com.iugu.model.PaymentMethod;
 
 
 public class PaymentMethodService {

@@ -6,4 +6,8 @@ public class IuguException extends Exception {
 	public IuguException(String Message, int ResponseCode, String ResponseText) {
 		super(Message + " - StatusCode: [" + ResponseCode + "] / ResponseText: [" + ResponseText + "]");
 	}
+
+	public IuguException(String msg) {
+		super(msg);
+	}
 }

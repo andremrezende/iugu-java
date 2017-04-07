@@ -19,7 +19,7 @@ public class SubscriptionService {
 	private final String REMOVE_URL = IuguConfiguration.url("/subscriptions/%s");
 	private final String SUSPEND_URL = IuguConfiguration.url("/subscriptions/%s/suspend");
 	private final String ACTIVATE_URL = IuguConfiguration.url("/subscriptions/%s/activate");
-	private final String CHANGE_SUBSCRIPTION_PLAN_URL = IuguConfiguration.url("/subscriptions/%s/change_plan/%s");
+//	private final String CHANGE_SUBSCRIPTION_PLAN_URL = IuguConfiguration.url("/subscriptions/%s/change_plan/%s");
 	private final String ADD_CREDITS_URL = IuguConfiguration.url("/subscriptions/%s/add_credits");
 	private final String REMOVE_CREDITS_URL = IuguConfiguration.url("/subscriptions/%s/remove_credits");
 
@@ -30,19 +30,19 @@ public class SubscriptionService {
 	public SubscriptionResponse create(Subscription subscription) throws IuguException {
 		Response response = this.iugu.getNewClient().target(CREATE_URL).request().post(Entity.entity(subscription, MediaType.APPLICATION_JSON));
 
-		int ResponseStatus = response.getStatus();
-		String ResponseText = null;
+		int responseStatus = response.getStatus();
+		String responseText = null;
 
-		if (ResponseStatus == 200)
+		if (responseStatus == 200)
 			return response.readEntity(SubscriptionResponse.class);
 
 		// Error Happened
 		if (response.hasEntity())
-			ResponseText = response.readEntity(String.class);
+			responseText = response.readEntity(String.class);
 
 		response.close();
 
-		throw new IuguException("Error creating subscription!", ResponseStatus, ResponseText);
+		throw new IuguException("Error creating subscription!", responseStatus, responseText);
 	}
 
 	public SubscriptionResponse find(String id) throws IuguException {
@@ -64,7 +64,8 @@ public class SubscriptionService {
 	}
 
 	public SubscriptionResponse change(String id, Subscription subscription) throws IuguException {
-		Response response = this.iugu.getNewClient().target(String.format(CHANGE_URL, id)).request().put(Entity.entity(subscription, MediaType.APPLICATION_JSON));
+		Response response = this.iugu.getNewClient().target(String.format(CHANGE_URL, id)).request()
+				.put(Entity.entity(subscription, MediaType.APPLICATION_JSON));
 
 		int ResponseStatus = response.getStatus();
 		String ResponseText = null;
@@ -135,8 +136,17 @@ public class SubscriptionService {
 		throw new IuguException("Error activating subscription!", ResponseStatus, ResponseText);
 	}
 
-	public SubscriptionResponse changePlan(String id, String planIdentifier) throws IuguException {
-		Response response = this.iugu.getNewClient().target(String.format(CHANGE_SUBSCRIPTION_PLAN_URL, id, planIdentifier)).request().post(null);
+	/**
+	 * Altera os dados de uma Assinatura, quaisquer parâmetros não informados não serão alterados.
+	 * @param id ID da Assinatura.
+	 * @param subscription Informações de Assinatura a serem alteradas.
+	 * @return Resposta da mudança de assinatura.
+	 * @throws IuguException Caso algum problema ocorra na mudança de valores de dados da assinatura.
+	 * @author Andre M. Rezende
+	 */
+	public SubscriptionResponse changePlan(String id, Subscription subscription) throws IuguException {
+		Response response = this.iugu.getNewClient().target(String.format(CHANGE_URL, id)).request()
+				.put(Entity.entity(subscription, MediaType.APPLICATION_JSON));
 
 		int ResponseStatus = response.getStatus();
 		String ResponseText = null;
@@ -154,7 +164,8 @@ public class SubscriptionService {
 	}
 
 	public SubscriptionResponse addCredits(String id, Credit credit) throws IuguException {
-		Response response = this.iugu.getNewClient().target(String.format(ADD_CREDITS_URL, id)).request().post(Entity.entity(credit, MediaType.APPLICATION_JSON));
+		Response response = this.iugu.getNewClient().target(String.format(ADD_CREDITS_URL, id)).request()
+				.post(Entity.entity(credit, MediaType.APPLICATION_JSON));
 
 		int ResponseStatus = response.getStatus();
 		String ResponseText = null;
@@ -172,7 +183,8 @@ public class SubscriptionService {
 	}
 
 	public SubscriptionResponse removeCredits(String id, Credit credit) throws IuguException {
-		Response response = this.iugu.getNewClient().target(String.format(REMOVE_CREDITS_URL, id)).request().post(Entity.entity(credit, MediaType.APPLICATION_JSON));
+		Response response = this.iugu.getNewClient().target(String.format(REMOVE_CREDITS_URL, id)).request()
+				.post(Entity.entity(credit, MediaType.APPLICATION_JSON));
 
 		int ResponseStatus = response.getStatus();
 		String ResponseText = null;

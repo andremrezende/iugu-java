@@ -17,6 +17,8 @@ public class Invoice implements Serializable {
 
 	private static final long serialVersionUID = 1719931730355279382L;
 
+	private String id;
+
 	/**
 	 * E-Mail do cliente
 	 */
@@ -39,7 +41,7 @@ public class Invoice implements Serializable {
 	 * Payer
 	 */
 	private Payer payer;
-	
+
 	/**
 	 * Emails de cópia
 	 */
@@ -107,16 +109,72 @@ public class Invoice implements Serializable {
 	@JsonProperty("payable_with")
 	private PayableWith payableWith;
 
+	@JsonProperty("ignore_canceled_email")
+	private boolean ignoreCanceledEmail;
+
+	@JsonProperty("ignore_due_email")
+	private boolean ignoreDueEmail;
+
+	private boolean currentFinesOption;
+
 	public Invoice(String email, Date dueDate, Item... items) {
 		this.email = email;
 		this.dueDate = dueDate;
 		this.items.addAll(Arrays.asList(items)); // FIXME Tratar null pointer
 	}
+
+	public Invoice(String id, Date dueDate, boolean ignoreCanceledEmail, boolean ignoreDueEmail,
+			boolean currentFinesOption, List<Item> items) {
+		this.id = id;
+		this.dueDate = dueDate;
+		this.ignoreCanceledEmail = ignoreCanceledEmail;
+		this.ignoreDueEmail = ignoreDueEmail;
+		this.currentFinesOption = currentFinesOption;
+		this.items = items;
+
+	}
+
 	public Invoice(String email, Date dueDate, Payer Payer, Item... items) {
 		this.email = email;
 		this.dueDate = dueDate;
 		this.payer = Payer;
 		this.items.addAll(Arrays.asList(items)); // FIXME Tratar null pointer
+	}
+
+	public String getId() {
+		return id;
+	}
+
+	public void setId(String id) {
+		this.id = id;
+	}
+	
+	
+	@JsonProperty("ignore_canceled_email")
+	public boolean isIgnoreCanceledEmail() {
+		return ignoreCanceledEmail;
+	}
+
+	public void setIgnoreCanceledEmail(boolean ignoreCanceledEmail) {
+		this.ignoreCanceledEmail = ignoreCanceledEmail;
+	}
+
+	@JsonProperty("ignore_due_email")
+	public boolean isIgnoreDueEmail() {
+		return ignoreDueEmail;
+	}
+
+	public void setIgnoreDueEmail(boolean ignoreDueEmail) {
+		this.ignoreDueEmail = ignoreDueEmail;
+	}
+
+	@JsonProperty("current_fines_option")
+	public boolean isCurrentFinesOption() {
+		return currentFinesOption;
+	}
+
+	public void setCurrentFinesOption(boolean currentFinesOption) {
+		this.currentFinesOption = currentFinesOption;
 	}
 
 	public String getEmail() {
@@ -134,11 +192,11 @@ public class Invoice implements Serializable {
 	public Payer getPayer() {
 		return payer;
 	}
-	
+
 	public void setPayer(Payer Payer) {
 		this.payer = Payer;
 	}
-	
+
 	public String getReturnUrl() {
 		return returnUrl;
 	}
@@ -232,6 +290,138 @@ public class Invoice implements Serializable {
 	public Invoice withCcEmails(String ccEmails) {
 		this.ccEmails = ccEmails;
 		return this;
+	}
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((ccEmails == null) ? 0 : ccEmails.hashCode());
+		result = prime * result + (currentFinesOption ? 1231 : 1237);
+		result = prime * result + ((customerId == null) ? 0 : customerId.hashCode());
+		result = prime * result + ((discountCents == null) ? 0 : discountCents.hashCode());
+		result = prime * result + ((dueDate == null) ? 0 : dueDate.hashCode());
+		result = prime * result + ((email == null) ? 0 : email.hashCode());
+		result = prime * result + ((expiredUrl == null) ? 0 : expiredUrl.hashCode());
+		result = prime * result + ((fines == null) ? 0 : fines.hashCode());
+		result = prime * result + ((id == null) ? 0 : id.hashCode());
+		result = prime * result + (ignoreCanceledEmail ? 1231 : 1237);
+		result = prime * result + (ignoreDueEmail ? 1231 : 1237);
+		result = prime * result + ((items == null) ? 0 : items.hashCode());
+		result = prime * result + ((latePaymentFine == null) ? 0 : latePaymentFine.hashCode());
+		result = prime * result + ((notificationUrl == null) ? 0 : notificationUrl.hashCode());
+		result = prime * result + ((payableWith == null) ? 0 : payableWith.hashCode());
+		result = prime * result + ((payer == null) ? 0 : payer.hashCode());
+		result = prime * result + ((perDayInterest == null) ? 0 : perDayInterest.hashCode());
+		result = prime * result + ((returnUrl == null) ? 0 : returnUrl.hashCode());
+		result = prime * result + ((taxCents == null) ? 0 : taxCents.hashCode());
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		Invoice other = (Invoice) obj;
+		if (ccEmails == null) {
+			if (other.ccEmails != null)
+				return false;
+		} else if (!ccEmails.equals(other.ccEmails))
+			return false;
+		if (currentFinesOption != other.currentFinesOption)
+			return false;
+		if (customerId == null) {
+			if (other.customerId != null)
+				return false;
+		} else if (!customerId.equals(other.customerId))
+			return false;
+		if (discountCents == null) {
+			if (other.discountCents != null)
+				return false;
+		} else if (!discountCents.equals(other.discountCents))
+			return false;
+		if (dueDate == null) {
+			if (other.dueDate != null)
+				return false;
+		} else if (!dueDate.equals(other.dueDate))
+			return false;
+		if (email == null) {
+			if (other.email != null)
+				return false;
+		} else if (!email.equals(other.email))
+			return false;
+		if (expiredUrl == null) {
+			if (other.expiredUrl != null)
+				return false;
+		} else if (!expiredUrl.equals(other.expiredUrl))
+			return false;
+		if (fines == null) {
+			if (other.fines != null)
+				return false;
+		} else if (!fines.equals(other.fines))
+			return false;
+		if (id == null) {
+			if (other.id != null)
+				return false;
+		} else if (!id.equals(other.id))
+			return false;
+		if (ignoreCanceledEmail != other.ignoreCanceledEmail)
+			return false;
+		if (ignoreDueEmail != other.ignoreDueEmail)
+			return false;
+		if (items == null) {
+			if (other.items != null)
+				return false;
+		} else if (!items.equals(other.items))
+			return false;
+		if (latePaymentFine == null) {
+			if (other.latePaymentFine != null)
+				return false;
+		} else if (!latePaymentFine.equals(other.latePaymentFine))
+			return false;
+		if (notificationUrl == null) {
+			if (other.notificationUrl != null)
+				return false;
+		} else if (!notificationUrl.equals(other.notificationUrl))
+			return false;
+		if (payableWith != other.payableWith)
+			return false;
+		if (payer == null) {
+			if (other.payer != null)
+				return false;
+		} else if (!payer.equals(other.payer))
+			return false;
+		if (perDayInterest == null) {
+			if (other.perDayInterest != null)
+				return false;
+		} else if (!perDayInterest.equals(other.perDayInterest))
+			return false;
+		if (returnUrl == null) {
+			if (other.returnUrl != null)
+				return false;
+		} else if (!returnUrl.equals(other.returnUrl))
+			return false;
+		if (taxCents == null) {
+			if (other.taxCents != null)
+				return false;
+		} else if (!taxCents.equals(other.taxCents))
+			return false;
+		return true;
+	}
+
+	@Override
+	public String toString() {
+		return "Invoice [id=" + id + ", email=" + email + ", dueDate=" + dueDate + ", items=" + items + ", payer="
+				+ payer + ", ccEmails=" + ccEmails + ", returnUrl=" + returnUrl + ", expiredUrl=" + expiredUrl
+				+ ", customerId=" + customerId + ", notificationUrl=" + notificationUrl + ", taxCents=" + taxCents
+				+ ", fines=" + fines + ", latePaymentFine=" + latePaymentFine + ", perDayInterest=" + perDayInterest
+				+ ", discountCents=" + discountCents + ", payableWith=" + payableWith + ", ignoreCanceledEmail="
+				+ ignoreCanceledEmail + ", ignoreDueEmail=" + ignoreDueEmail + ", currentFinesOption="
+				+ currentFinesOption + "]";
 	}
 
 }
